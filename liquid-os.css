@@ -18,6 +18,15 @@ body.liquid-os-transitioning main,body.liquid-os-transitioning footer,body.liqui
 .command-item:focus-visible{transform:translateY(-2px) scale(1.01);box-shadow:0 0 0 2px rgba(130,230,255,.24),0 12px 34px rgba(70,170,255,.16)}
 .command-item:active{transform:scale(.965)}
 .liquid-os-active{animation:os-activate .5s cubic-bezier(.2,.8,.2,1)}
+/* Moving liquid selection for the fixed bottom navigation */
+.bottom-nav{position:relative;isolation:isolate;overflow:hidden}
+.bottom-nav .nav-item{position:relative;z-index:2}
+.bottom-nav .nav-liquid{position:absolute;z-index:1;left:0;top:7px;height:62px;border-radius:27px;pointer-events:none;background:linear-gradient(135deg,rgba(123,216,255,.38),rgba(111,93,238,.44) 55%,rgba(255,90,190,.24));border:1px solid rgba(205,249,255,.38);box-shadow:inset 0 1px 0 rgba(255,255,255,.32),inset 0 -8px 18px rgba(36,55,180,.12),0 8px 26px rgba(45,140,255,.18);backdrop-filter:blur(12px) saturate(150%);-webkit-backdrop-filter:blur(12px) saturate(150%);transform:translate3d(0,0,0);transition:left .42s cubic-bezier(.2,.9,.2,1),width .32s ease,top .32s ease,height .32s ease;border-radius:50% 44% 48% 52% / 46% 52% 48% 54%}
+.bottom-nav .nav-liquid:before{content:"";position:absolute;inset:1px;border-radius:inherit;background:radial-gradient(ellipse at 28% 18%,rgba(255,255,255,.34),transparent 28%),linear-gradient(120deg,rgba(255,255,255,.10),transparent 38%,rgba(85,228,255,.10) 70%,rgba(255,93,191,.08));opacity:.95}
+.bottom-nav .nav-liquid:after{content:"";position:absolute;width:42%;height:34%;left:10%;top:7%;border-radius:50%;background:rgba(255,255,255,.20);filter:blur(7px);transform:rotate(-12deg)}
+.bottom-nav .nav-item.active{background:transparent!important;border-color:transparent!important;box-shadow:none!important}
+@media(max-width:760px){.liquid-os-ripple{width:19px;height:19px}.command-modal:not([hidden]) .command-dialog{animation-duration:.42s}.bottom-nav .nav-liquid{top:7px;height:58px;border-radius:25px}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.liquid-os-ripple,.liquid-os-expanding,.command-modal:not([hidden]) .command-dialog,.command-modal:not([hidden]) .command-backdrop,.command-modal.os-closing .command-dialog,.command-modal.os-closing .command-backdrop,.liquid-os-active{animation:none!important}.liquid-os-ripple,.liquid-os-expanding{display:none}.bottom-nav .nav-liquid{transition:none!important}}
 @keyframes os-ripple{0%{opacity:.95;transform:translate(-50%,-50%) scale(.15)}55%{opacity:.52;transform:translate(-50%,-50%) scale(6)}100%{opacity:0;transform:translate(-50%,-50%) scale(9)}}
 @keyframes os-ring{0%{opacity:.8;transform:scale(.45)}100%{opacity:0;transform:scale(5.5)}}
 @keyframes os-expand{0%{opacity:.05;transform:translate(-50%,-50%) scale(.08) rotate(-8deg)}35%{opacity:.72;transform:translate(-50%,-50%) scale(.55) rotate(3deg)}72%{opacity:.34;transform:translate(-50%,-50%) scale(1.08) rotate(-2deg)}100%{opacity:0;transform:translate(-50%,-50%) scale(1.55) rotate(0)}}
@@ -27,5 +36,3 @@ body.liquid-os-transitioning main,body.liquid-os-transitioning footer,body.liqui
 @keyframes os-backdrop-in{from{opacity:0}to{opacity:1}}
 @keyframes os-backdrop-out{from{opacity:1}to{opacity:0}}
 @keyframes os-activate{0%{transform:scale(1)}32%{transform:scale(.965)}62%{transform:scale(1.02)}100%{transform:scale(1)}}
-@media(max-width:760px){.liquid-os-ripple{width:19px;height:19px}.command-modal:not([hidden]) .command-dialog{animation-duration:.42s}}
-@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.liquid-os-ripple,.liquid-os-expanding,.command-modal:not([hidden]) .command-dialog,.command-modal:not([hidden]) .command-backdrop,.command-modal.os-closing .command-dialog,.command-modal.os-closing .command-backdrop,.liquid-os-active{animation:none!important}.liquid-os-ripple,.liquid-os-expanding{display:none}}
