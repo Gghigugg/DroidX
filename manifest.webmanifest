@@ -1,0 +1,13 @@
+{
+  "name":"DroidX — Smart Android Shortcuts",
+  "short_name":"DroidX",
+  "description":"Premium Android settings shortcuts and utilities.",
+  "start_url":"./",
+  "scope":"./",
+  "display":"standalone",
+  "background_color":"#05060a",
+  "theme_color":"#090b12",
+  "orientation":"portrait-primary",
+  "categories":["utilities","productivity"],
+  "icons":[]
+}
