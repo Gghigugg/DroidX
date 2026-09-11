@@ -23,6 +23,42 @@
       if(reduced)scrollTo(0,y);else{document.body.classList.add('liquid-os-transitioning');scrollTo({top:y,behavior:'smooth'});setTimeout(()=>document.body.classList.remove('liquid-os-transitioning'),520)}
       history.pushState(null,'','#'+id);
     },true);
+
+    /* Bottom-nav liquid: the glass/water selection follows the tapped section. */
+    const nav=document.querySelector('.bottom-nav');
+    if(nav){
+      const items=[...nav.querySelectorAll('.nav-item')];
+      const indicator=document.createElement('span');
+      indicator.className='nav-liquid';
+      indicator.setAttribute('aria-hidden','true');
+      nav.prepend(indicator);
+      const moveIndicator=(item,animate=true)=>{
+        if(!item)return;
+        const navBox=nav.getBoundingClientRect();
+        const box=item.getBoundingClientRect();
+        indicator.style.transitionDuration=animate&&!reduced?'420ms':'0ms';
+        indicator.style.left=Math.round(box.left-navBox.left)+'px';
+        indicator.style.width=Math.round(box.width)+'px';
+        indicator.style.top=Math.round(box.top-navBox.top)+'px';
+        indicator.style.height=Math.round(box.height)+'px';
+        items.forEach(x=>x.classList.toggle('active',x===item));
+      };
+      const activateFromHash=(animate=false)=>{
+        const hash=(location.hash||'#top').slice(1);
+        const match=items.find(item=>item.getAttribute('href')==='#'+hash)||items[0];
+        moveIndicator(match,animate);
+      };
+      items.forEach(item=>item.addEventListener('click',()=>{
+        moveIndicator(item,true);
+      },false));
+      requestAnimationFrame(()=>activateFromHash(false));
+      addEventListener('resize',()=>requestAnimationFrame(()=>{
+        const active=items.find(x=>x.classList.contains('active'))||items[0];
+        moveIndicator(active,false);
+      }),{passive:true});
+      addEventListener('hashchange',()=>activateFromHash(true),{passive:true});
+    }
+
     const modal=document.getElementById('commandCenter');
     if(modal&&window.DroidXCommand){
       const originalOpen=window.DroidXCommand.open,originalClose=window.DroidXCommand.close;
