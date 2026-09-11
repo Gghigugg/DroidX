@@ -1,38 +1,38 @@
 // DroidX: Android Settings shortcut controller
-const ACTIONS={
- settings:'android.settings.SETTINGS',wifi:'android.settings.WIFI_SETTINGS',bluetooth:'android.settings.BLUETOOTH_SETTINGS',location:'android.settings.LOCATION_SOURCE_SETTINGS',display:'android.settings.DISPLAY_SETTINGS',sound:'android.settings.SOUND_SETTINGS',security:'android.settings.SECURITY_SETTINGS',battery:'android.settings.BATTERY_SAVER_SETTINGS',apps:'android.settings.APPLICATION_SETTINGS',language:'android.settings.LOCALE_SETTINGS',datetime:'android.settings.DATE_SETTINGS',home:'android.settings.HOME_SETTINGS',keyboard:'android.settings.INPUT_METHOD_SETTINGS',data:'android.settings.DATA_USAGE_SETTINGS',accessibility:'android.settings.ACCESSIBILITY_SETTINGS',search:'android.settings.SEARCH_SETTINGS',device:'android.settings.DEVICE_INFO_SETTINGS',biometrics:'android.settings.BIOMETRIC_ENROLL',network:'android.settings.WIRELESS_SETTINGS',privacy:'android.settings.PRIVACY_SETTINGS',notifications:'android.settings.APP_NOTIFICATION_SETTINGS'
-};
+const ACTIONS={settings:'android.settings.SETTINGS',wifi:'android.settings.WIFI_SETTINGS',bluetooth:'android.settings.BLUETOOTH_SETTINGS',location:'android.settings.LOCATION_SOURCE_SETTINGS',display:'android.settings.DISPLAY_SETTINGS',sound:'android.settings.SOUND_SETTINGS',security:'android.settings.SECURITY_SETTINGS',battery:'android.settings.BATTERY_SAVER_SETTINGS',apps:'android.settings.APPLICATION_SETTINGS',language:'android.settings.LOCALE_SETTINGS',datetime:'android.settings.DATE_SETTINGS',home:'android.settings.HOME_SETTINGS',keyboard:'android.settings.INPUT_METHOD_SETTINGS',data:'android.settings.DATA_USAGE_SETTINGS',accessibility:'android.settings.ACCESSIBILITY_SETTINGS',search:'android.settings.SEARCH_SETTINGS',device:'android.settings.DEVICE_INFO_SETTINGS',biometrics:'android.settings.BIOMETRIC_ENROLL',network:'android.settings.WIRELESS_SETTINGS',privacy:'android.settings.PRIVACY_SETTINGS',notifications:'android.settings.APP_NOTIFICATION_SETTINGS'};
 const FALLBACK='Your browser/device does not support this shortcut.';
-const toast=document.getElementById('toast');
-let toastTimer;
+const toast=document.getElementById('toast');let toastTimer;
 function showToast(message=FALLBACK){toast.textContent=message;toast.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>toast.classList.remove('show'),3600)}
-function openAndroidSetting(key){
-  const action=ACTIONS[key];
-  if(!action){showToast();return}
-  if(!/Android/i.test(navigator.userAgent)){showToast(FALLBACK);return}
-  let failed=true;
-  const onHide=()=>{failed=false;document.removeEventListener('visibilitychange',onHide)};
-  document.addEventListener('visibilitychange',onHide);
-  const timer=setTimeout(()=>{document.removeEventListener('visibilitychange',onHide);if(failed)showToast()},1500);
-  try{window.location.href=`intent:#Intent;action=${action};end`}catch(e){clearTimeout(timer);document.removeEventListener('visibilitychange',onHide);showToast()}
-}
+function openAndroidSetting(key){const action=ACTIONS[key];if(!action){showToast();return}if(!/Android/i.test(navigator.userAgent)){showToast(FALLBACK);return}let failed=true;const onHide=()=>{failed=false;document.removeEventListener('visibilitychange',onHide)};document.addEventListener('visibilitychange',onHide);const timer=setTimeout(()=>{document.removeEventListener('visibilitychange',onHide);if(failed)showToast()},1500);try{window.location.href=`intent:#Intent;action=${action};end`}catch(e){clearTimeout(timer);document.removeEventListener('visibilitychange',onHide);showToast()}}
 
 document.querySelectorAll('[data-intent]').forEach(el=>el.addEventListener('click',()=>openAndroidSetting(el.dataset.intent)));
 document.getElementById('year').textContent=new Date().getFullYear();
 document.querySelectorAll('.card').forEach(card=>card.setAttribute('aria-label',card.textContent.trim().replace(/\s+/g,' ')));
 
+// Premium shortcut search: filters the main Android shortcut grid instantly.
+const searchInput=document.getElementById('shortcutSearch');
+const clearSearch=document.getElementById('clearSearch');
+const shortcutGrid=document.getElementById('shortcutGrid');
+const shortcutCount=document.getElementById('shortcutCount');
+const noResults=document.getElementById('noResults');
+const shortcutCards=shortcutGrid?[...shortcutGrid.querySelectorAll('.card')]:[];
+function filterShortcuts(){
+  const query=(searchInput?.value||'').trim().toLowerCase();let visible=0;
+  shortcutCards.forEach(card=>{const text=card.textContent.toLowerCase();const match=!query||text.includes(query);card.hidden=!match;if(match)visible++});
+  if(shortcutCount)shortcutCount.textContent=query?`${visible} result${visible===1?'':'s'}`:'18 shortcuts';
+  if(noResults)noResults.hidden=visible!==0;
+}
+searchInput?.addEventListener('input',filterShortcuts);
+clearSearch?.addEventListener('click',()=>{if(searchInput){searchInput.value='';filterShortcuts();searchInput.focus()}});
+
 // Liquid Glass touch response: light follows the user's finger/touch point.
-document.querySelectorAll('.card,.primary,.secondary,.topbar,.hero,.info').forEach(el=>{
-  const move=e=>{
-    const r=el.getBoundingClientRect();
-    const p=e.touches?.[0]||e;
-    el.style.setProperty('--mx',`${((p.clientX-r.left)/r.width)*100}%`);
-    el.style.setProperty('--my',`${((p.clientY-r.top)/r.height)*100}%`);
-  };
-  el.addEventListener('pointermove',move,{passive:true});
-  el.addEventListener('touchmove',move,{passive:true});
-  el.addEventListener('pointerdown',()=>el.classList.add('glass-touch'));
-  el.addEventListener('pointerup',()=>el.classList.remove('glass-touch'));
-  el.addEventListener('pointercancel',()=>el.classList.remove('glass-touch'));
-  el.addEventListener('pointerleave',()=>el.classList.remove('glass-touch'));
+document.querySelectorAll('.card,.primary,.secondary,.topbar,.hero,.info,.search-box').forEach(el=>{
+  const move=e=>{const r=el.getBoundingClientRect();const p=e.touches?.[0]||e;el.style.setProperty('--mx',`${((p.clientX-r.left)/r.width)*100}%`);el.style.setProperty('--my',`${((p.clientY-r.top)/r.height)*100}%`)};
+  el.addEventListener('pointermove',move,{passive:true});el.addEventListener('touchmove',move,{passive:true});el.addEventListener('pointerdown',()=>el.classList.add('glass-touch'));el.addEventListener('pointerup',()=>el.classList.remove('glass-touch'));el.addEventListener('pointercancel',()=>el.classList.remove('glass-touch'));el.addEventListener('pointerleave',()=>el.classList.remove('glass-touch'));
 });
+
+// Bottom navigation follows the section currently visible on screen.
+const navItems=[...document.querySelectorAll('.bottom-nav .nav-item')];
+const navSections=['top','settings','utilities','info'].map(id=>document.getElementById(id));
+const observer=new IntersectionObserver(entries=>{const active=entries.filter(e=>e.isIntersecting).sort((a,b)=>b.intersectionRatio-a.intersectionRatio)[0];if(!active)return;const i=navSections.indexOf(active.target);if(i>=0)navItems.forEach((item,n)=>item.classList.toggle('active',n===i))},{rootMargin:'-35% 0px -50% 0px',threshold:[0,.15,.35,.6]});
+navSections.forEach(section=>section&&observer.observe(section));
