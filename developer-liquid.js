@@ -6,12 +6,11 @@
       card.dataset.ready='1';
       const avatar=card.querySelector('.developer-avatar');
       if(avatar&&window.DROIDX_DEVELOPER_IMAGE){avatar.innerHTML='<img src="'+window.DROIDX_DEVELOPER_IMAGE+'" alt="SOMESH — DroidX developer">';avatar.setAttribute('aria-hidden','false')}
-      card.addEventListener('pointermove',e=>{const r=card.getBoundingClientRect();const x=((e.clientX-r.left)/r.width)*100;const y=((e.clientY-r.top)/r.height)*100;card.style.setProperty('--mx',x+'%');card.style.setProperty('--my',y+'%');card.style.setProperty('--water-x',((x-50)/50*7).toFixed(2)+'px');card.style.setProperty('--water-y',((y-50)/50*5).toFixed(2)+'px')},{passive:true});
-      card.addEventListener('pointerdown',()=>card.classList.add('developer-liquid-pressed'));
+      card.addEventListener('pointerdown',()=>card.classList.add('developer-liquid-pressed'),{passive:true});
       const up=()=>card.classList.remove('developer-liquid-pressed');
-      card.addEventListener('pointerup',up);card.addEventListener('pointercancel',up);card.addEventListener('pointerleave',up);
+      card.addEventListener('pointerup',up,{passive:true});card.addEventListener('pointercancel',up,{passive:true});
     }
-    /* Restore the known-working Android intent pattern supplied for DroidX. */
+    /* Known-working Android intent bridge. */
     window.openAndroidSetting=(key)=>{
       const action=window.DROIDX_ACTIONS?.[key]||({settings:'android.settings.SETTINGS',wifi:'android.settings.WIFI_SETTINGS',bluetooth:'android.settings.BLUETOOTH_SETTINGS',location:'android.settings.LOCATION_SOURCE_SETTINGS',display:'android.settings.DISPLAY_SETTINGS',sound:'android.settings.SOUND_SETTINGS',battery:'android.settings.BATTERY_SAVER_SETTINGS',apps:'android.settings.APPLICATION_SETTINGS',language:'android.settings.LOCALE_SETTINGS',datetime:'android.settings.DATE_SETTINGS',home:'android.settings.HOME_SETTINGS',keyboard:'android.settings.INPUT_METHOD_SETTINGS',data:'android.settings.DATA_USAGE_SETTINGS',accessibility:'android.settings.ACCESSIBILITY_SETTINGS',search:'android.settings.SEARCH_SETTINGS',device:'android.settings.DEVICE_INFO_SETTINGS',biometrics:'android.settings.BIOMETRIC_ENROLL',network:'android.settings.WIRELESS_SETTINGS',privacy:'android.settings.PRIVACY_SETTINGS',notifications:'android.settings.APP_NOTIFICATION_SETTINGS',audio:'android.settings.SOUND_SETTINGS'})[key];
       if(!action){if(typeof window.showToast==='function')window.showToast();return;}
