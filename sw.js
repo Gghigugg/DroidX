@@ -1,4 +1,4 @@
-const CACHE='droidx-v7';
+const CACHE='droidx-v8';
 const ASSETS=['./','./index.html','./style.css','./premium.css','./mobile-polish.css','./liquid-glass.css','./ios-inspired.css','./ios27-liquid.css','./ios27-final.css','./liquid-drag.css','./water-liquid.css','./script.js','./global-search.js','./command-center.js','./splash.js','./touch-engine.js','./liquid-drag.js','./water-liquid.js','./compatibility-engine.js','./manifest.webmanifest','./icon-192.svg','./icon-512.svg'];
 self.addEventListener('install',event=>{event.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS)).then(()=>self.skipWaiting()))});
 self.addEventListener('activate',event=>{event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim()))});
