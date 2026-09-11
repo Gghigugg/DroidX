@@ -1,0 +1,23 @@
+/* DroidX Liquid OS Experience — navigation, morphing and activation layer */
+html{scroll-behavior:auto}
+body{--liquid-os-progress:0;overflow-x:hidden}
+body.liquid-os-transitioning main,body.liquid-os-transitioning footer,body.liquid-os-transitioning .bottom-nav{transition:filter .28s ease,opacity .28s ease;filter:saturate(.94);}
+.liquid-os-ripple{position:fixed;z-index:1800;width:22px;height:22px;border-radius:50%;pointer-events:none;transform:translate(-50%,-50%) scale(.2);background:radial-gradient(circle,rgba(255,255,255,.62) 0 8%,rgba(100,220,255,.28) 25%,transparent 70%);box-shadow:0 0 24px rgba(90,210,255,.28);animation:os-ripple .62s cubic-bezier(.16,.8,.25,1) forwards}
+.liquid-os-ripple:after{content:"";position:absolute;inset:-10px;border:1px solid rgba(180,245,255,.32);border-radius:inherit;animation:os-ring .62s ease-out forwards}
+.command-modal{perspective:1000px}
+.command-modal:not([hidden]) .command-dialog{animation:os-dialog-in .48s cubic-bezier(.18,.9,.22,1) both;transform-origin:50% 82%;}
+.command-modal:not([hidden]) .command-backdrop{animation:os-backdrop-in .38s ease both}
+.command-modal.os-closing .command-dialog{animation:os-dialog-out .25s cubic-bezier(.5,0,.8,.2) both}
+.command-modal.os-closing .command-backdrop{animation:os-backdrop-out .22s ease both}
+.command-item{transition:transform .22s cubic-bezier(.2,.8,.2,1),filter .22s ease,background .22s ease}
+.command-item:active{transform:scale(.975)}
+.liquid-os-active{animation:os-activate .5s cubic-bezier(.2,.8,.2,1)}
+@keyframes os-ripple{0%{opacity:.9;transform:translate(-50%,-50%) scale(.2)}55%{opacity:.5;transform:translate(-50%,-50%) scale(5.5)}100%{opacity:0;transform:translate(-50%,-50%) scale(8.5)}}
+@keyframes os-ring{0%{opacity:.8;transform:scale(.5)}100%{opacity:0;transform:scale(5)}}
+@keyframes os-dialog-in{0%{opacity:0;transform:translateY(18px) scale(.84) rotateX(4deg);filter:blur(8px)}45%{opacity:1;transform:translateY(-4px) scale(1.015) rotateX(0);filter:blur(0)}100%{opacity:1;transform:none}}
+@keyframes os-dialog-out{0%{opacity:1;transform:none}100%{opacity:0;transform:translateY(10px) scale(.9);filter:blur(5px)}}
+@keyframes os-backdrop-in{from{opacity:0}to{opacity:1}}
+@keyframes os-backdrop-out{from{opacity:1}to{opacity:0}}
+@keyframes os-activate{0%{transform:scale(1)}35%{transform:scale(.97)}65%{transform:scale(1.018)}100%{transform:scale(1)}}
+@media(max-width:760px){.liquid-os-ripple{width:18px;height:18px}.command-modal:not([hidden]) .command-dialog{animation-duration:.4s}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.liquid-os-ripple,.command-modal:not([hidden]) .command-dialog,.command-modal:not([hidden]) .command-backdrop,.command-modal.os-closing .command-dialog,.command-modal.os-closing .command-backdrop,.liquid-os-active{animation:none!important}.liquid-os-ripple{display:none}}
