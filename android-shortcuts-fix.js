@@ -46,7 +46,6 @@
     return false;
   };
 
-  // Safety repair: the utilities section must keep its four working web tools.
   const repairUtilities=()=>{
     const section=document.getElementById('utilities');
     if(!section)return;
@@ -62,4 +61,6 @@
     click('utilityNetwork',()=>document.getElementById('networkStatus')?.click());
   };
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',repairUtilities,{once:true});else repairUtilities();
+  // Load the final capture-layer last so existing shortcut-card handlers also use the repaired launcher.
+  const repairScript=document.createElement('script');repairScript.src='./button-repair.js?v=1';repairScript.defer=false;document.body.appendChild(repairScript);
 })();
