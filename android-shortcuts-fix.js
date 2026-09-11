@@ -45,4 +45,21 @@
     notify(FALLBACK);
     return false;
   };
+
+  // Safety repair: the utilities section must keep its four working web tools.
+  const repairUtilities=()=>{
+    const section=document.getElementById('utilities');
+    if(!section)return;
+    if(section.querySelector('#utilityGrid'))return;
+    const grid=document.createElement('div');
+    grid.id='utilityGrid';grid.className='grid utility-grid';
+    grid.innerHTML='<button class="card mini-card" id="utilityShare" type="button"><b>↗️</b><span>Share DroidX</span><small>Share this utility</small></button><button class="card mini-card" id="utilityCopy" type="button"><b>🔗</b><span>Copy Link</span><small>Copy site address</small></button><button class="card mini-card" id="utilityDevice" type="button"><b>📱</b><span>Device Info</span><small>Browser & device basics</small></button><button class="card mini-card" id="utilityNetwork" type="button"><b>🌐</b><span>Network Status</span><small>Online / offline state</small></button>';
+    section.appendChild(grid);
+    const click=(id,handler)=>document.getElementById(id)?.addEventListener('click',handler);
+    click('utilityShare',()=>document.getElementById('shareDroidX')?.click());
+    click('utilityCopy',()=>document.getElementById('copyDroidX')?.click());
+    click('utilityDevice',()=>document.getElementById('deviceInfo')?.click());
+    click('utilityNetwork',()=>document.getElementById('networkStatus')?.click());
+  };
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',repairUtilities,{once:true});else repairUtilities();
 })();
