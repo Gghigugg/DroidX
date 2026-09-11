@@ -29,17 +29,15 @@
   }
   window.openAndroidSetting=open;
 
-  // Capture shortcut clicks before older handlers can launch the fragile implementation.
   document.addEventListener('click',e=>{
+    if(e.target.closest('.favorite-btn'))return;
     const target=e.target.closest('[data-intent],.card[data-key],.command-item');
     if(!target)return;
     const key=target.dataset.intent||target.dataset.key||target.dataset.shortcutKey;
     if(!key||!ACTIONS[key])return;
-    if(target.matches('.favorite-btn'))return;
     e.preventDefault();e.stopImmediatePropagation();open(key);
   },true);
 
-  // Repair the accidentally empty Utilities section without duplicating existing tools.
   function repairUtilities(){
     const section=document.getElementById('utilities');if(!section||section.querySelector('#utilityGrid'))return;
     const grid=document.createElement('div');grid.id='utilityGrid';grid.className='grid utility-grid';
