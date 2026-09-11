@@ -14,12 +14,25 @@ function openAndroidSetting(key){
   const onHide=()=>{failed=false;document.removeEventListener('visibilitychange',onHide)};
   document.addEventListener('visibilitychange',onHide);
   const timer=setTimeout(()=>{document.removeEventListener('visibilitychange',onHide);if(failed)showToast()},1500);
-  try{
-    // Chrome/Android may accept intent:// deep links; support varies by browser/version.
-    window.location.href=`intent:#Intent;action=${action};end`;
-  }catch(e){clearTimeout(timer);document.removeEventListener('visibilitychange',onHide);showToast()}
+  try{window.location.href=`intent:#Intent;action=${action};end`}catch(e){clearTimeout(timer);document.removeEventListener('visibilitychange',onHide);showToast()}
 }
+
 document.querySelectorAll('[data-intent]').forEach(el=>el.addEventListener('click',()=>openAndroidSetting(el.dataset.intent)));
 document.getElementById('year').textContent=new Date().getFullYear();
-// Keyboard users can activate shortcut cards like normal buttons.
 document.querySelectorAll('.card').forEach(card=>card.setAttribute('aria-label',card.textContent.trim().replace(/\s+/g,' ')));
+
+// Liquid Glass touch response: light follows the user's finger/touch point.
+document.querySelectorAll('.card,.primary,.secondary,.topbar,.hero,.info').forEach(el=>{
+  const move=e=>{
+    const r=el.getBoundingClientRect();
+    const p=e.touches?.[0]||e;
+    el.style.setProperty('--mx',`${((p.clientX-r.left)/r.width)*100}%`);
+    el.style.setProperty('--my',`${((p.clientY-r.top)/r.height)*100}%`);
+  };
+  el.addEventListener('pointermove',move,{passive:true});
+  el.addEventListener('touchmove',move,{passive:true});
+  el.addEventListener('pointerdown',()=>el.classList.add('glass-touch'));
+  el.addEventListener('pointerup',()=>el.classList.remove('glass-touch'));
+  el.addEventListener('pointercancel',()=>el.classList.remove('glass-touch'));
+  el.addEventListener('pointerleave',()=>el.classList.remove('glass-touch'));
+});
