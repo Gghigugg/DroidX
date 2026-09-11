@@ -1,0 +1,19 @@
+/* DroidX Final Repair — clean layout + realistic water surface */
+*,*::before,*::after{box-sizing:border-box}
+html,body{width:100%;max-width:100%;overflow-x:hidden}
+body{min-height:100vh}
+main{width:min(1180px,calc(100% - 28px));margin:0 auto}
+section{width:100%;min-width:0}.grid{width:100%;min-width:0}
+.card,.glass,.search-box,.dashboard,.info,.topbar,.bottom-nav{position:relative;overflow:hidden}
+.card{cursor:pointer}.card:active,.primary:active,.secondary:active,.command-trigger:active,.nav-item:active{transform:scale(.985)}
+button,a{touch-action:manipulation}button:disabled{opacity:.5;cursor:not-allowed}
+.hero{min-height:360px;display:flex;flex-direction:column;justify-content:center}.hero-water{pointer-events:none!important;user-select:none}
+.hero-water{opacity:.9!important;mix-blend-mode:screen!important;filter:url(#droidx-water-filter) saturate(135%)!important;box-shadow:inset 16px 10px 38px rgba(255,255,255,.17),inset -26px -28px 52px rgba(8,48,135,.28),inset 0 0 35px rgba(95,220,255,.13),0 0 90px rgba(60,185,255,.14)!important}
+.hero-water:before{animation:dx-water-flow 6.5s ease-in-out infinite!important;background:radial-gradient(ellipse at 25% 20%,rgba(255,255,255,.8),transparent 10%),radial-gradient(ellipse at 72% 70%,rgba(35,135,255,.3),transparent 42%),repeating-radial-gradient(ellipse at 40% 45%,rgba(225,250,255,.11) 0 1px,transparent 2px 18px),linear-gradient(115deg,transparent 18%,rgba(255,255,255,.2) 34%,transparent 46%,rgba(80,210,255,.1) 65%,transparent 78%)!important}
+.hero-water:after{animation:dx-water-edge 4.8s ease-in-out infinite!important}.water-ripple{z-index:5!important}
+.developer-liquid{width:100%;margin:38px 0 28px!important;min-height:190px;align-items:center!important}.developer-copy{position:relative;z-index:3}.developer-avatar{z-index:3}.developer-instagram{position:relative;z-index:4;cursor:pointer}
+.glass:before,.glass:after,.card:before,.card:after,.search-box:before,.search-box:after,.dashboard:before,.dashboard:after,.info:before,.info:after,.bottom-nav:before,.bottom-nav:after{pointer-events:none!important}
+@media(max-width:760px){main{width:calc(100% - 20px)}.hero{min-height:330px}.section{width:100%}.dashboard{display:block}.dashboard-stats{margin-top:18px}.developer-liquid{margin-top:30px!important}}
+@keyframes dx-water-flow{0%,100%{transform:translate3d(-2%,-1%,0) scale(1)}50%{transform:translate3d(3%,2%,0) scale(1.055)}}
+@keyframes dx-water-edge{0%,100%{opacity:.5;transform:scale(.985)}50%{opacity:.95;transform:scale(1.015)}}
+@media(prefers-reduced-motion:reduce){.hero-water:before,.hero-water:after{animation:none!important}}
