@@ -1,71 +1,49 @@
-/* DroidX Liquid OS 2.0 — fluid navigation, expanding liquid and advanced morph */
+/* DroidX Liquid OS — lightweight navigation + moving liquid selection */
 (()=>{
   const init=()=>{
     const reduced=window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
     const ripple=(x,y)=>{
       if(reduced)return;
-      const r=document.createElement('span');r.className='liquid-os-ripple';r.style.left=x+'px';r.style.top=y+'px';document.body.appendChild(r);setTimeout(()=>r.remove(),760);
-    };
-    const expand=(x,y)=>{
-      if(reduced)return;
-      const el=document.createElement('span');el.className='liquid-os-expanding';el.style.left=x+'px';el.style.top=y+'px';
-      const size=Math.max(innerWidth,innerHeight)*1.35;el.style.width=size+'px';el.style.height=size+'px';document.body.appendChild(el);setTimeout(()=>el.remove(),680);
+      const r=document.createElement('span');r.className='liquid-os-ripple';r.style.left=x+'px';r.style.top=y+'px';document.body.appendChild(r);setTimeout(()=>r.remove(),420);
     };
     document.addEventListener('click',e=>{
-      const target=e.target.closest('a[href^="#"],button[data-intent],.card[data-intent],.command-item');
+      const target=e.target.closest('a[href^="#"],button[data-intent],.card[data-intent],.command-item,.nav-item');
       if(!target||target.closest('.favorite-btn'))return;
-      const x=e.clientX||innerWidth/2,y=e.clientY||innerHeight/2;ripple(x,y);target.classList.remove('liquid-os-active');void target.offsetWidth;target.classList.add('liquid-os-active');setTimeout(()=>target.classList.remove('liquid-os-active'),550);
-      if(target.matches('button[data-intent],.card[data-intent],.command-item'))expand(x,y);
+      ripple(e.clientX||innerWidth/2,e.clientY||innerHeight/2);
     },true);
+
     document.addEventListener('click',e=>{
-      const a=e.target.closest('a[href^="#"]');if(!a)return;const id=a.getAttribute('href').slice(1);if(!id)return;const el=document.getElementById(id);if(!el)return;e.preventDefault();
+      const a=e.target.closest('a[href^="#"]');
+      if(!a)return;
+      const id=a.getAttribute('href').slice(1);if(!id)return;
+      const el=document.getElementById(id);if(!el)return;
+      e.preventDefault();
       const y=el.getBoundingClientRect().top+scrollY-18;
-      if(reduced)scrollTo(0,y);else{document.body.classList.add('liquid-os-transitioning');scrollTo({top:y,behavior:'smooth'});setTimeout(()=>document.body.classList.remove('liquid-os-transitioning'),520)}
+      scrollTo(0,y);
       history.pushState(null,'','#'+id);
     },true);
 
-    /* Bottom-nav liquid: the glass/water selection follows the tapped section. */
     const nav=document.querySelector('.bottom-nav');
     if(nav){
       const items=[...nav.querySelectorAll('.nav-item')];
-      const indicator=document.createElement('span');
-      indicator.className='nav-liquid';
-      indicator.setAttribute('aria-hidden','true');
-      nav.prepend(indicator);
+      let indicator=nav.querySelector('.nav-liquid');
+      if(!indicator){indicator=document.createElement('span');indicator.className='nav-liquid';indicator.setAttribute('aria-hidden','true');nav.prepend(indicator)}
       const moveIndicator=(item,animate=true)=>{
         if(!item)return;
-        const navBox=nav.getBoundingClientRect();
-        const box=item.getBoundingClientRect();
-        indicator.style.transitionDuration=animate&&!reduced?'420ms':'0ms';
-        indicator.style.left=Math.round(box.left-navBox.left)+'px';
-        indicator.style.width=Math.round(box.width)+'px';
-        indicator.style.top=Math.round(box.top-navBox.top)+'px';
-        indicator.style.height=Math.round(box.height)+'px';
-        items.forEach(x=>x.classList.toggle('active',x===item));
+        const nb=nav.getBoundingClientRect(),b=item.getBoundingClientRect();
+        indicator.style.transitionDuration=animate&&!reduced?'240ms':'0ms';
+        indicator.style.left=Math.round(b.left-nb.left)+'px';
+        indicator.style.width=Math.round(b.width)+'px';
+        indicator.style.top=Math.round(b.top-nb.top)+'px';
+        indicator.style.height=Math.round(b.height)+'px';
       };
-      const activateFromHash=(animate=false)=>{
-        const hash=(location.hash||'#top').slice(1);
-        const match=items.find(item=>item.getAttribute('href')==='#'+hash)||items[0];
-        moveIndicator(match,animate);
-      };
-      items.forEach(item=>item.addEventListener('click',()=>{
-        moveIndicator(item,true);
-      },false));
-      requestAnimationFrame(()=>activateFromHash(false));
-      addEventListener('resize',()=>requestAnimationFrame(()=>{
-        const active=items.find(x=>x.classList.contains('active'))||items[0];
-        moveIndicator(active,false);
-      }),{passive:true});
-      addEventListener('hashchange',()=>activateFromHash(true),{passive:true});
+      const sync=()=>moveIndicator(nav.querySelector('.nav-item.active')||items[0],false);
+      items.forEach(item=>item.addEventListener('click',()=>requestAnimationFrame(()=>moveIndicator(item,true)),{passive:true}));
+      const observer=new MutationObserver(sync);
+      items.forEach(item=>observer.observe(item,{attributes:true,attributeFilter:['class']}));
+      requestAnimationFrame(sync);
+      addEventListener('resize',()=>requestAnimationFrame(sync),{passive:true});
     }
-
-    const modal=document.getElementById('commandCenter');
-    if(modal&&window.DroidXCommand){
-      const originalOpen=window.DroidXCommand.open,originalClose=window.DroidXCommand.close;
-      window.DroidXCommand.open=()=>{modal.classList.remove('os-closing');originalOpen();if(!reduced){modal.classList.remove('os-morph');void modal.offsetWidth;modal.classList.add('os-morph')}};
-      window.DroidXCommand.close=()=>{if(reduced){originalClose();return}modal.classList.add('os-closing');setTimeout(()=>{modal.classList.remove('os-closing','os-morph');originalClose()},250)};
-    }
-    window.DroidXLiquidOS={ripple,expand};
   };
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
 })();
