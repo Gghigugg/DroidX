@@ -4,6 +4,8 @@
     const card=document.querySelector('.developer-liquid');
     if(card&&!card.dataset.ready){
       card.dataset.ready='1';
+      const avatar=card.querySelector('.developer-avatar');
+      if(avatar&&window.DROIDX_DEVELOPER_IMAGE){avatar.innerHTML='<img src="'+window.DROIDX_DEVELOPER_IMAGE+'" alt="SOMESH — DroidX developer">';avatar.setAttribute('aria-hidden','false')}
       card.addEventListener('pointermove',e=>{const r=card.getBoundingClientRect();const x=((e.clientX-r.left)/r.width)*100;const y=((e.clientY-r.top)/r.height)*100;card.style.setProperty('--mx',x+'%');card.style.setProperty('--my',y+'%');card.style.setProperty('--water-x',((x-50)/50*7).toFixed(2)+'px');card.style.setProperty('--water-y',((y-50)/50*5).toFixed(2)+'px')},{passive:true});
       card.addEventListener('pointerdown',()=>card.classList.add('developer-liquid-pressed'));
       const up=()=>card.classList.remove('developer-liquid-pressed');
