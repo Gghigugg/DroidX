@@ -1,1 +1,19 @@
-(()=>{const init=()=>{const targets=()=>document.querySelectorAll('.primary,.secondary,.command-trigger,.nav-item,.card,.favorite-btn');const bind=()=>targets().forEach(el=>{if(el.dataset.touchEngine)return;el.dataset.touchEngine='1';el.addEventListener('pointerdown',()=>el.classList.add('touch-press'),{passive:true});['pointerup','pointercancel','pointerleave'].forEach(t=>el.addEventListener(t,()=>el.classList.remove('touch-press'),{passive:true}))});bind();new MutationObserver(bind).observe(document.body,{childList:true,subtree:true})};if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init()})();
+/* DroidX lightweight touch feedback — delegated, no MutationObserver */
+(()=>{
+  const init=()=>{
+    if(document.documentElement.dataset.touchEngineReady)return;
+    document.documentElement.dataset.touchEngineReady='1';
+    const selector='.primary,.secondary,.command-trigger,.nav-item,.card,.favorite-btn';
+    document.addEventListener('pointerdown',e=>{
+      const el=e.target.closest?.(selector);
+      if(el)el.classList.add('touch-press');
+    },{passive:true});
+    const release=e=>{
+      const el=e.target.closest?.(selector);
+      if(el)el.classList.remove('touch-press');
+    };
+    document.addEventListener('pointerup',release,{passive:true});
+    document.addEventListener('pointercancel',release,{passive:true});
+  };
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
+})();
