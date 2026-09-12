@@ -48,5 +48,9 @@
     document.getElementById('utilityDevice').onclick=()=>document.getElementById('deviceInfo')?.click();
     document.getElementById('utilityNetwork').onclick=()=>document.getElementById('networkStatus')?.click();
   }
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',repairUtilities,{once:true});else repairUtilities();
+  const loadDeveloperLogo=()=>{
+    if(document.querySelector('script[data-droidx-developer-logo]'))return;
+    const s=document.createElement('script');s.src='./developer-logo.js?v=1';s.defer=false;s.dataset.droidxDeveloperLogo='1';document.body.appendChild(s);
+  };
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>{repairUtilities();loadDeveloperLogo()},{once:true});else{repairUtilities();loadDeveloperLogo()}
 })();
