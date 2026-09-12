@@ -48,9 +48,10 @@
     document.getElementById('utilityDevice').onclick=()=>document.getElementById('deviceInfo')?.click();
     document.getElementById('utilityNetwork').onclick=()=>document.getElementById('networkStatus')?.click();
   }
-  const loadDeveloperLogo=()=>{
-    if(document.querySelector('script[data-droidx-developer-logo]'))return;
-    const s=document.createElement('script');s.src='./developer-logo.js?v=1';s.defer=false;s.dataset.droidxDeveloperLogo='1';document.body.appendChild(s);
+  const loadScript=(src,marker)=>{
+    if(document.querySelector(`script[data-${marker}]`))return;
+    const s=document.createElement('script');s.src=src;s.defer=false;s.dataset[marker]='1';document.body.appendChild(s);
   };
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>{repairUtilities();loadDeveloperLogo()},{once:true});else{repairUtilities();loadDeveloperLogo()}
+  const bootRepairs=()=>{repairUtilities();loadScript('./developer-logo.js?v=1','droidx-developer-logo');loadScript('./startup-flow-repair.js?v=1','droidx-startup-flow')};
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bootRepairs,{once:true});else bootRepairs();
 })();
