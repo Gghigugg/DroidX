@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { AGENTS } from "@/src/agents/registry";
+import { createTask, listTasks } from "@/src/lib/task-store";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -9,25 +10,29 @@ function authorized(request: NextRequest) {
   return Boolean(expected && request.headers.get("authorization") === `Bearer ${expected}`);
 }
 
-function storageNotConfigured() {
-  return NextResponse.json(
-    { error: "Task storage is not connected yet. Configure server-side storage and workspace authentication before enabling writes." },
-    { status: 503 }
-  );
+function storageError(error: unknown) {
+  const message = error instanceof Error ? error.message : "";
+  if (message === "TASK_STORE_NOT_CONFIGURED") {
+    return NextResponse.json({ error: "Task storage is not configured. Add server-only Supabase environment variables." }, { status: 503 });
+  }
+  // Do not return provider response bodies or credentials to callers.
+  console.error("IG Agent OS task storage error:", message.slice(0, 300));
+  return NextResponse.json({ error: "Task storage request failed. Check server configuration and logs." }, { status: 502 });
 }
 
 export async function GET(request: NextRequest) {
-  if (!authorized(request)) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!authorized(request)) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const rawLimit = Number(request.nextUrl.searchParams.get("limit") ?? "25");
+  const limit = Number.isInteger(rawLimit) ? Math.max(1, Math.min(rawLimit, 100)) : 25;
+  try {
+    return NextResponse.json({ tasks: await listTasks(limit) });
+  } catch (error) {
+    return storageError(error);
   }
-  // Fail closed: no fake success or in-memory persistence is presented as a real queue.
-  return storageNotConfigured();
 }
 
 export async function POST(request: NextRequest) {
-  if (!authorized(request)) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  if (!authorized(request)) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   let body: unknown;
   try {
@@ -35,7 +40,6 @@ export async function POST(request: NextRequest) {
   } catch {
     return NextResponse.json({ error: "Request body must be valid JSON." }, { status: 400 });
   }
-
   if (!body || typeof body !== "object" || Array.isArray(body)) {
     return NextResponse.json({ error: "Expected a task object." }, { status: 400 });
   }
@@ -61,6 +65,15 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "input must be smaller than 12 KB." }, { status: 400 });
   }
 
-  // Storage deliberately remains disabled until authenticated, tenant-scoped persistence is configured.
-  return storageNotConfigured();
+  try {
+    const result = await createTask({
+      title,
+      assigned_agent_id: assignedAgentId,
+      input,
+      idempotency_key: idempotencyKey
+    });
+    return NextResponse.json(result, { status: result.duplicate ? 200 : 201 });
+  } catch (error) {
+    return storageError(error);
+  }
 }
