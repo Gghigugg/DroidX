@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import Link from "next/link";
 import { Activity, ArrowDownRight, ArrowUpRight, Bot, CalendarDays, CheckCircle2, ChevronDown, CircleHelp, Command, Filter, Instagram, LayoutDashboard, MessageCircle, MoreHorizontal, Plus, Search, Send, ShieldCheck, Sparkles, Users, Workflow } from "lucide-react";
 import { AGENTS } from "@/src/agents/registry";
 
@@ -41,7 +42,7 @@ export default function Dashboard() {
     <section className="main-area">
       <header className="topbar"><div className="crumb">Workspace <span>/</span> <b>{active}</b></div><div className="top-actions"><span className="demo-tag"><span/> DEMO DATA</span><button className="icon-btn"><Search size={17}/></button><button className="icon-btn"><Command size={17}/></button><div className="avatar small">S</div></div></header>
       <div className="content">
-        <div className="welcome"><div><div className="eyebrow"><span className="live-dot"/> YOUR AI OPERATIONS CENTER</div><h1>{active === "Overview" ? "Good work starts with clarity." : active}</h1><p>One manager. 25 specialists. You stay in control.</p></div><button className="primary" onClick={() => setShowAll(true)}><Plus size={17}/> Create task</button></div>
+        <div className="welcome"><div><div className="eyebrow"><span className="live-dot"/> YOUR AI OPERATIONS CENTER</div><h1>{active === "Overview" ? "Good work starts with clarity." : active}</h1><p>One manager. 25 specialists. You stay in control.</p></div><div className="welcome-actions"><Link className="primary" href="/tasks"><Plus size={17}/> Plan a task</Link><Link className="outline" href="/agents">Explore AI team</Link></div></div>
         <div className="notice"><ShieldCheck size={19}/><div><b>Human-supervised by design</b><span>Agents can plan and draft. Sending, publishing, and account changes require approval.</span></div><button aria-label="Dismiss notice" onClick={e => e.currentTarget.parentElement?.remove()}>×</button></div>
         <div className="metrics">
           <article className="metric glass"><div className="metric-top"><span>Active agents</span><span className="metric-icon"><Bot size={17}/></span></div><div className="metric-value">26 <small>/ 26</small></div><div className="metric-foot"><span className="neutral">Roster configured</span><span>Chief + 25</span></div></article>
